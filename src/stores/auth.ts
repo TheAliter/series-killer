@@ -12,8 +12,10 @@ interface User {
 export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const loading = ref(true)
+  const passwordRecoveryFlow = ref(false)
 
   const isAuthenticated = computed(() => !!user.value)
+  const isPasswordRecoveryFlow = computed(() => passwordRecoveryFlow.value)
 
   const signUp = async (email: string, password: string): Promise<ApiResponse<any>> => {
     try {
@@ -41,9 +43,44 @@ export const useAuthStore = defineStore('auth', () => {
       const { error } = await auth.signOut()
       if (error) throw error
       user.value = null
+      passwordRecoveryFlow.value = false
       return { data: undefined, error: null }
     } catch (error) {
       return { data: undefined, error }
+    }
+  }
+
+  const enterPasswordRecoveryFlow = (): void => {
+    passwordRecoveryFlow.value = true
+  }
+
+  const exitPasswordRecoveryFlow = (): void => {
+    passwordRecoveryFlow.value = false
+  }
+
+  const requestPasswordReset = async (email: string): Promise<ApiResponse<any>> => {
+    try {
+      const { data, error } = await auth.resetPasswordForEmail(email)
+      if (error) throw error
+      return { data, error: null }
+    } catch (error) {
+      return { data: null, error }
+    }
+  }
+
+  const completePasswordRecovery = async (
+    newPassword: string
+  ): Promise<ApiResponse<any>> => {
+    try {
+      const { data, error } = await auth.updatePassword(newPassword)
+      if (error) throw error
+      if (data?.user) {
+        user.value = data.user
+      }
+      passwordRecoveryFlow.value = false
+      return { data, error: null }
+    } catch (error) {
+      return { data: null, error }
     }
   }
 
@@ -118,9 +155,14 @@ export const useAuthStore = defineStore('auth', () => {
     user: readonly(user),
     loading: readonly(loading),
     isAuthenticated,
+    isPasswordRecoveryFlow,
+    enterPasswordRecoveryFlow,
+    exitPasswordRecoveryFlow,
     signUp,
     signIn,
     signOut,
+    requestPasswordReset,
+    completePasswordRecovery,
     changePassword,
     initializeAuth,
     refreshSession,

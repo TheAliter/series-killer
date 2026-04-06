@@ -31,8 +31,12 @@ onMounted(async () => {
       authStore.setUser(session?.user || null)
     } else if (event === 'SIGNED_OUT') {
       authStore.setUser(null)
+      authStore.exitPasswordRecoveryFlow()
     } else if (event === 'USER_UPDATED') {
       authStore.setUser(session?.user || null)
+    } else if (event === 'PASSWORD_RECOVERY') {
+      authStore.setUser(session?.user || null)
+      authStore.enterPasswordRecoveryFlow()
     }
   })
 

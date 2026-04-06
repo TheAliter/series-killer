@@ -34,6 +34,11 @@ export const auth = {
     })
   },
 
+  async resetPasswordForEmail(email: string): Promise<ApiResponse<any>> {
+    const redirectTo = `${window.location.origin}/reset-password`
+    return await supabase.auth.resetPasswordForEmail(email, { redirectTo })
+  },
+
   async signOut(): Promise<ApiResponse<void>> {
     const result = await supabase.auth.signOut()
     return { data: undefined, error: result.error }
