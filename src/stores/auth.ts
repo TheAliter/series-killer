@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
-import { auth } from '../services/supabase'
+import { auth, isPasswordRecoveryAccessToken } from '../services/supabase'
 import type { ApiResponse } from '../types'
 
 interface User {
@@ -95,6 +95,13 @@ export const useAuthStore = defineStore('auth', () => {
       
       if (session?.user) {
         user.value = session.user
+        const token = session.access_token
+        passwordRecoveryFlow.value = Boolean(
+          token && isPasswordRecoveryAccessToken(token)
+        )
+      } else {
+        user.value = null
+        passwordRecoveryFlow.value = false
       }
     } catch (error) {
       console.error('Auth initialization error:', error)

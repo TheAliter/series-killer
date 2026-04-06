@@ -15,6 +15,28 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 
 export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
+/** Supabase recovery sessions mark the JWT `amr` with method `recovery`. */
+export function isPasswordRecoveryAccessToken(accessToken: string): boolean {
+  try {
+    const parts = accessToken.split('.')
+    if (parts.length < 2) return false
+    let base64 = parts[1].replace(/-/g, '+').replace(/_/g, '/')
+    while (base64.length % 4) base64 += '='
+    const payload = JSON.parse(atob(base64)) as { amr?: unknown }
+    const amr = payload.amr
+    if (!Array.isArray(amr)) return false
+    return amr.some((entry: unknown) => {
+      if (entry === 'recovery') return true
+      if (typeof entry === 'object' && entry !== null && 'method' in entry) {
+        return (entry as { method?: string }).method === 'recovery'
+      }
+      return false
+    })
+  } catch {
+    return false
+  }
+}
+
 // Auth helpers
 export const auth = {
   async signUp(email: string, password: string): Promise<ApiResponse<any>> {

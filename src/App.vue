@@ -13,38 +13,9 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
-import { auth } from './services/supabase'
 
 const authStore = useAuthStore()
-
-onMounted(async () => {
-  // Initialize auth state first
-  await authStore.initializeAuth()
-  
-  // Listen for auth state changes
-  const { data: { subscription } } = auth.onAuthStateChange((event, session) => {
-    console.log('Auth state changed:', event, session?.user?.email)
-    
-    if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-      authStore.setUser(session?.user || null)
-    } else if (event === 'SIGNED_OUT') {
-      authStore.setUser(null)
-      authStore.exitPasswordRecoveryFlow()
-    } else if (event === 'USER_UPDATED') {
-      authStore.setUser(session?.user || null)
-    } else if (event === 'PASSWORD_RECOVERY') {
-      authStore.setUser(session?.user || null)
-      authStore.enterPasswordRecoveryFlow()
-    }
-  })
-
-  // Cleanup subscription on component unmount
-  return () => {
-    subscription?.unsubscribe()
-  }
-})
 </script>
 
 <style>
