@@ -36,10 +36,10 @@ const handleSave = async (seriesData: { name: string; description?: string; tota
   } else {
     await booksStore.addSeries({ ...seriesData, user_id: authStore.user.id })
   }
-  router.push('/app/series')
+  router.push('/')
 }
 
 const handleCancel = () => {
-  router.push('/app/series')
+  router.push('/')
 }
 </script> 

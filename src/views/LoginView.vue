@@ -43,7 +43,7 @@ const onSubmit = async () => {
   if (signInError) {
     error.value = signInError.message || 'Failed to sign in.'
   } else {
-    router.push('/app')
+    router.push('/')
   }
 }
 </script> 

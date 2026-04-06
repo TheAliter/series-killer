@@ -3,7 +3,7 @@ import { useAuthStore } from '../stores/auth'
 
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',
+    path: '/login',
     name: 'Login',
     component: () => import('../views/LoginView.vue'),
     meta: { requiresGuest: true }
@@ -15,17 +15,12 @@ const routes: RouteRecordRaw[] = [
     meta: { requiresGuest: true }
   },
   {
-    path: '/app',
-    name: 'App',
+    path: '/',
     component: () => import('../views/AppView.vue'),
     meta: { requiresAuth: true },
     children: [
       {
         path: '',
-        redirect: '/app/series'
-      },
-      {
-        path: 'series',
         name: 'Series',
         component: () => import('../views/SeriesView.vue')
       },
@@ -57,6 +52,22 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
+    path: '/app/:pathMatch(.*)*',
+    redirect: (to) => {
+      const raw = to.params.pathMatch
+      const segment =
+        raw === undefined || raw === ''
+          ? ''
+          : Array.isArray(raw)
+            ? raw.filter(Boolean).join('/')
+            : String(raw)
+      if (!segment || segment === 'series') {
+        return { path: '/' }
+      }
+      return { path: `/${segment}` }
+    }
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/'
   }
@@ -70,13 +81,16 @@ const router = createRouter({
     if (savedPosition) {
       return savedPosition
     }
-    
+
     // If navigating to series view from a book form, preserve scroll position
-    if (to.name === 'Series' && (from.name === 'BookAdd' || from.name === 'BookEdit' || from.name === 'BookAddToSeries')) {
+    if (
+      to.name === 'Series' &&
+      (from.name === 'BookAdd' || from.name === 'BookEdit' || from.name === 'BookAddToSeries')
+    ) {
       // Return false to prevent automatic scrolling
       return false
     }
-    
+
     // Default behavior: scroll to top
     return { top: 0 }
   }
@@ -85,19 +99,19 @@ const router = createRouter({
 // Navigation guard
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
-  
+
   // Wait for auth to be initialized if it's still loading
   if (authStore.loading) {
     await authStore.initializeAuth()
   }
-  
+
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'Login' })
   } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next({ name: 'App' })
+    next({ path: '/' })
   } else {
     next()
   }
 })
 
-export default router 
+export default router

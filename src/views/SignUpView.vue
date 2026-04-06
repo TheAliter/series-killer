@@ -17,7 +17,7 @@
     </form>
     <p class="mt-4 text-sm text-center text-ink-muted">
       Already have an account?
-      <router-link to="/" class="font-medium text-editorial-accent hover:opacity-90">Sign In</router-link>
+      <router-link to="/login" class="font-medium text-editorial-accent hover:opacity-90">Sign In</router-link>
     </p>
     <p v-if="error" class="text-red-600 mt-2 text-sm">{{ error }}</p>
     <p v-if="success" class="text-green-600 mt-2 text-sm">{{ success }}</p>
@@ -47,7 +47,7 @@ const onSubmit = async () => {
     error.value = signUpError.message || 'Failed to sign up.'
   } else {
     success.value = 'Check your email for a confirmation link.'
-    setTimeout(() => router.push('/'), 2000)
+    setTimeout(() => router.push('/login'), 2000)
   }
 }
 </script> 

@@ -176,13 +176,13 @@ const onSubmit = async () => {
       })
     }
     
-    router.push('/app/series')
+    router.push('/')
   } finally {
     loading.value = false
   }
 }
 
 const goBack = () => {
-  router.push('/app/series')
+  router.push('/')
 }
 </script> 

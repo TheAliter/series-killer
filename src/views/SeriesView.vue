@@ -11,7 +11,7 @@
       class="flex justify-end items-center gap-2 mb-6 lg:hidden"
     >
       <router-link
-        to="/app/series/add"
+        to="/series/add"
         class="btn-primary flex items-center justify-center gap-2 w-full max-w-[14rem]"
       >
         <Plus class="w-4 h-4 shrink-0" />
@@ -51,7 +51,7 @@
       <Layers class="w-12 h-12 mx-auto mb-3 text-ink-muted/50" />
       <h3 class="text-lg font-serif font-semibold text-ink">No series yet</h3>
       <p class="text-sm mt-1 text-ink-muted">Add your first series to get started!</p>
-      <router-link to="/app/series/add" class="btn-primary inline-flex mt-4">
+      <router-link to="/series/add" class="btn-primary inline-flex mt-4">
         + Add Series
       </router-link>
     </div>
@@ -143,7 +143,7 @@ const handleEditBook = (book: Book) => {
   // Save current scroll position before navigating
   localStorage.setItem(SCROLL_POSITION_KEY, window.scrollY.toString())
 
-  router.push(`/app/book/edit/${book.id}`)
+  router.push(`/book/edit/${book.id}`)
 }
 
 const handleDeleteBook = async (book: Book) => {
@@ -167,14 +167,14 @@ const handleUpdateBookStatus = async (bookId: string, status: 'reading' | 'compl
 }
 
 const editSeries = (series: Series | ReadonlySeries) => {
-  router.push(`/app/series/edit/${series.id}`)
+  router.push(`/series/edit/${series.id}`)
 }
 
 const addBookToSeries = (series: Series | ReadonlySeries) => {
   // Save current scroll position before navigating
   localStorage.setItem(SCROLL_POSITION_KEY, window.scrollY.toString())
 
-  router.push(`/app/series/${series.id}/add-book`)
+  router.push(`/series/${series.id}/add-book`)
 }
 
 const handleDeleteSeries = async (series: Series | ReadonlySeries) => {

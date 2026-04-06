@@ -20,7 +20,7 @@
         </p>
       </div>
       <router-link
-        to="/app/series/add"
+        to="/series/add"
         class="btn-primary flex items-center justify-center gap-2 w-full mt-2"
       >
         <Plus class="w-4 h-4 shrink-0" />

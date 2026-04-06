@@ -72,7 +72,7 @@ onMounted(async () => {
           // Book not found - this could happen if it was deleted
           console.error('Book not found:', bookId)
           alert('Book not found. It may have been deleted.')
-          router.push('/app/series')
+          router.push('/')
           return
         }
       }
@@ -84,7 +84,7 @@ onMounted(async () => {
     } catch (error) {
       console.error('Error loading book data:', error)
       alert('Error loading book data. Please try again.')
-      router.push('/app/series')
+      router.push('/')
     } finally {
       loading.value = false
     }
@@ -101,7 +101,7 @@ const handleSave = async (bookData: BookFormData & { user_id: string }) => {
     
     if (!bookStillExists) {
       alert('Book no longer exists. It may have been deleted.')
-      router.push('/app/series')
+      router.push('/')
       return
     }
     
@@ -128,17 +128,17 @@ const handleSave = async (bookData: BookFormData & { user_id: string }) => {
   
   // Navigate back to appropriate page
   if (seriesId.value) {
-    router.push('/app/series')
+    router.push('/')
   } else {
-    router.push('/app/series')
+    router.push('/')
   }
 }
 
 const handleCancel = () => {
   if (seriesId.value) {
-    router.push('/app/series')
+    router.push('/')
   } else {
-    router.push('/app/series')
+    router.push('/')
   }
 }
 </script> 
