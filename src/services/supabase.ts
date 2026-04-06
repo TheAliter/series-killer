@@ -15,7 +15,15 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 
 export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey)
 
-/** Supabase recovery sessions mark the JWT `amr` with method `recovery`. */
+/** Fragment (or query for PKCE) from the reset email includes `type=recovery`; JWT `amr` may still be `otp`. */
+export function urlIndicatesPasswordRecovery(): boolean {
+  if (typeof window === 'undefined') return false
+  const fromHash = new URLSearchParams(window.location.hash.replace(/^#/, '')).get('type')
+  if (fromHash === 'recovery') return true
+  return new URLSearchParams(window.location.search).get('type') === 'recovery'
+}
+
+/** Some recovery JWTs use `amr` method `recovery` (not always — email links often use `otp` + `type=recovery` in URL). */
 export function isPasswordRecoveryAccessToken(accessToken: string): boolean {
   try {
     const parts = accessToken.split('.')

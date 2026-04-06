@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
-import { auth, isPasswordRecoveryAccessToken } from '../services/supabase'
+import { auth, isPasswordRecoveryAccessToken, urlIndicatesPasswordRecovery } from '../services/supabase'
 import type { ApiResponse } from '../types'
 
 interface User {
@@ -86,7 +86,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const initializeAuth = async (): Promise<void> => {
     try {
-      // Get the current session from Supabase
+      let recoveryFromUrl = urlIndicatesPasswordRecovery()
+      if (!recoveryFromUrl && typeof sessionStorage !== 'undefined') {
+        if (sessionStorage.getItem('sk_password_recovery') === '1') {
+          recoveryFromUrl = true
+          sessionStorage.removeItem('sk_password_recovery')
+        }
+      }
+      // Read URL / sessionStorage before getSession(); client may strip the hash after exchanging tokens.
       const { data: { session }, error } = await auth.getSession()
       if (error) {
         console.error('Error getting session:', error)
@@ -96,9 +103,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (session?.user) {
         user.value = session.user
         const token = session.access_token
-        passwordRecoveryFlow.value = Boolean(
-          token && isPasswordRecoveryAccessToken(token)
-        )
+        passwordRecoveryFlow.value =
+          recoveryFromUrl ||
+          Boolean(token && isPasswordRecoveryAccessToken(token))
       } else {
         user.value = null
         passwordRecoveryFlow.value = false
