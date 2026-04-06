@@ -43,6 +43,19 @@
           <MenuItem v-slot="{ active }">
             <button
               type="button"
+              @click="goToChangePassword"
+              :class="[
+                active ? 'bg-editorial-accent text-white' : 'text-ink',
+                'group flex w-full items-center rounded-md px-2 py-2 text-sm',
+              ]"
+            >
+              <KeyRound class="mr-2 h-5 w-5" aria-hidden="true" />
+              Change password
+            </button>
+          </MenuItem>
+          <MenuItem v-slot="{ active }">
+            <button
+              type="button"
               @click="handleSignOut"
               :class="[
                 active ? 'bg-editorial-accent text-white' : 'text-ink',
@@ -62,7 +75,7 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
-import { MoreVertical, LogOut } from 'lucide-vue-next'
+import { MoreVertical, LogOut, KeyRound } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 
 defineProps<{
@@ -71,6 +84,10 @@ defineProps<{
 
 const authStore = useAuthStore()
 const router = useRouter()
+
+const goToChangePassword = () => {
+  router.push({ name: 'ChangePassword' })
+}
 
 const handleSignOut = async () => {
   await authStore.signOut()

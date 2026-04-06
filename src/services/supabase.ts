@@ -51,6 +51,10 @@ export const auth = {
     return await supabase.auth.refreshSession()
   },
 
+  async updatePassword(password: string): Promise<ApiResponse<any>> {
+    return await supabase.auth.updateUser({ password })
+  },
+
   onAuthStateChange(callback: (event: string, session: any) => void) {
     return supabase.auth.onAuthStateChange(callback)
   }

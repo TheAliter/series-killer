@@ -89,6 +89,31 @@ export const useAuthStore = defineStore('auth', () => {
     user.value = newUser
   }
 
+  const changePassword = async (
+    currentPassword: string,
+    newPassword: string
+  ): Promise<ApiResponse<any>> => {
+    try {
+      const email = user.value?.email
+      if (!email) {
+        return { data: null, error: new Error('Not signed in.') }
+      }
+      const { data: signInData, error: signInError } = await auth.signIn(email, currentPassword)
+      if (signInError) throw signInError
+      if (signInData?.user) {
+        user.value = signInData.user
+      }
+      const { data, error } = await auth.updatePassword(newPassword)
+      if (error) throw error
+      if (data?.user) {
+        user.value = data.user
+      }
+      return { data, error: null }
+    } catch (error) {
+      return { data: null, error }
+    }
+  }
+
   return {
     user: readonly(user),
     loading: readonly(loading),
@@ -96,6 +121,7 @@ export const useAuthStore = defineStore('auth', () => {
     signUp,
     signIn,
     signOut,
+    changePassword,
     initializeAuth,
     refreshSession,
     setUser

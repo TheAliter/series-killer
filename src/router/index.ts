@@ -48,6 +48,11 @@ const routes: RouteRecordRaw[] = [
         path: 'book/edit/:bookId',
         name: 'BookEdit',
         component: () => import('../views/BookFormView.vue')
+      },
+      {
+        path: 'account/password',
+        name: 'ChangePassword',
+        component: () => import('../views/ChangePasswordView.vue')
       }
     ]
   },
