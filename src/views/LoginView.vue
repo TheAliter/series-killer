@@ -7,8 +7,9 @@
         <input v-model="email" id="email" type="email" class="input" required autocomplete="email" />
       </div>
       <div>
-        <div class="flex items-center justify-between gap-2 mb-1">
-          <label for="password" class="block text-sm font-medium text-ink">Password</label>
+        <label for="password" class="block text-sm font-medium text-ink mb-1">Password</label>
+        <input v-model="password" id="password" type="password" class="input" required autocomplete="current-password" />
+        <div class="mt-1.5 text-right">
           <router-link
             to="/forgot-password"
             class="text-sm font-medium text-editorial-accent hover:opacity-90"
@@ -16,7 +17,6 @@
             Forgot password?
           </router-link>
         </div>
-        <input v-model="password" id="password" type="password" class="input" required autocomplete="current-password" />
       </div>
       <button type="submit" class="btn-primary w-full" :disabled="loading">
         <span v-if="loading">Signing in...</span>

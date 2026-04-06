@@ -122,13 +122,17 @@
       class="ml-11 mt-2 flex flex-wrap items-center gap-2 text-sm text-ink-muted"
       :class="{ 'opacity-0': isFutureRelease }"
     >
-      <input
+      <label
         v-if="book.status !== 'completed' && !isFutureRelease"
-        type="checkbox"
-        title="Mark as completed"
-        @change="$emit('updateStatus', book.id, 'completed')"
-        class="form-checkbox h-4 w-4 cursor-pointer rounded border-paper-dark text-editorial-accent focus:ring-editorial-accent"
-      />
+        class="inline-flex cursor-pointer select-none items-center gap-2"
+      >
+        <input
+          type="checkbox"
+          @change="$emit('updateStatus', book.id, 'completed')"
+          class="form-checkbox h-4 w-4 shrink-0 cursor-pointer rounded border-paper-dark text-editorial-accent focus:ring-editorial-accent"
+        />
+        <span class="text-sm text-ink-muted">Mark as completed</span>
+      </label>
       <div v-if="book.rating" class="flex items-center gap-0.5">
         <Star
           v-for="ratingStarIndex in 5"

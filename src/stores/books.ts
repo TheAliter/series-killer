@@ -111,10 +111,12 @@ export const useBooksStore = defineStore('books', () => {
       }
       
       const oldSeriesId = bookToUpdate.series_id
-      const newSeriesId = updates.series_id
-      
+      const seriesIdChanged =
+        Object.prototype.hasOwnProperty.call(updates, 'series_id') &&
+        updates.series_id !== oldSeriesId
+
       console.log('Book found in store:', bookToUpdate)
-      console.log('Old series ID:', oldSeriesId, 'New series ID:', newSeriesId)
+      console.log('Old series ID:', oldSeriesId, 'seriesIdChanged:', seriesIdChanged)
       
       const { data, error } = await db.updateBook(id, updates)
       if (error) {
@@ -137,10 +139,10 @@ export const useBooksStore = defineStore('books', () => {
           console.warn('Book not found in main books array for update')
         }
 
-        // Handle series books array updates
-        if (oldSeriesId !== newSeriesId) {
+        // Handle series books array updates (only move when `series_id` is explicitly in the payload)
+        if (seriesIdChanged) {
+          const newSeriesId = updates.series_id
           console.log('Series assignment changed, updating series arrays')
-          // Remove from old series
           if (oldSeriesId) {
             const oldSeriesIndex = series.value.findIndex(s => s.id === oldSeriesId)
             if (oldSeriesIndex !== -1 && series.value[oldSeriesIndex].books) {
@@ -148,8 +150,7 @@ export const useBooksStore = defineStore('books', () => {
               console.log('Removed book from old series')
             }
           }
-          
-          // Add to new series
+
           if (newSeriesId) {
             const newSeriesIndex = series.value.findIndex(s => s.id === newSeriesId)
             if (newSeriesIndex !== -1) {
@@ -161,9 +162,9 @@ export const useBooksStore = defineStore('books', () => {
             }
           }
         } else {
-          // Update the book within the existing series
-          if (newSeriesId) {
-            const seriesIndex = series.value.findIndex(s => s.id === newSeriesId)
+          const seriesIdForNested = updatedBook.series_id ?? oldSeriesId
+          if (seriesIdForNested) {
+            const seriesIndex = series.value.findIndex(s => s.id === seriesIdForNested)
             if (seriesIndex !== -1 && series.value[seriesIndex].books) {
               const bookIndexInSeries = series.value[seriesIndex].books!.findIndex(b => b.id === id)
               if (bookIndexInSeries !== -1) {
@@ -174,8 +175,8 @@ export const useBooksStore = defineStore('books', () => {
           }
         }
 
-        // Update series book counts if series assignment changed
-        if (oldSeriesId !== newSeriesId) {
+        if (seriesIdChanged) {
+          const newSeriesId = updates.series_id
           if (oldSeriesId) {
             await updateSeriesBookCount(oldSeriesId)
           }
