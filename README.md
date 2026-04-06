@@ -151,6 +151,41 @@ When adding a book to a series, you can optionally set a release date. If the re
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## GitHub and Vercel (automatic deploys on push)
+
+The repo is initialized on branch `main`. GitHub CLI (`gh`) was not available in this environment, so finish the remote and Vercel import locally:
+
+### 1. Create the GitHub repository
+
+- On [github.com/new](https://github.com/new), create a repository (e.g. `series-killer`), **without** adding a README (this repo already has one).
+
+### 2. Push `main`
+
+```bash
+cd series-killer
+git remote add origin https://github.com/YOUR_USERNAME/series-killer.git
+git push -u origin main
+```
+
+Or, with [GitHub CLI](https://cli.github.com/) installed and logged in (`gh auth login`):
+
+```bash
+gh repo create series-killer --public --source=. --remote=origin --push
+```
+
+### 3. Connect Vercel to GitHub
+
+1. Sign in at [vercel.com](https://vercel.com) and click **Add New… → Project**.
+2. **Import** your GitHub repository (install the Vercel GitHub app if prompted).
+3. Vercel should detect **Vite**; confirm **Build Command** `npm run build` and **Output Directory** `dist` (see [vercel.json](vercel.json) for SPA rewrites).
+4. Under **Environment Variables**, add:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`  
+   (same values as in `.env.local`.)
+5. Click **Deploy**. After this, every push to the connected branch (usually `main`) triggers a new deployment.
+
+6. In **Supabase** → Authentication → URL configuration, set **Site URL** (and redirect URLs if needed) to your Vercel production URL.
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
