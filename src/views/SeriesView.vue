@@ -1,24 +1,23 @@
 <template>
   <div class="py-6">
-    <header class="mb-6 lg:hidden">
-      <h2 class="font-serif text-[1.75rem] font-semibold text-ink leading-tight m-0 mb-1">
-        Series Killer
-      </h2>
-      <p class="text-sm text-ink-muted m-0">Your library</p>
+    <header class="mb-6 flex items-start justify-between gap-3 lg:hidden">
+      <div class="min-w-0">
+        <h2 class="font-serif text-[1.75rem] font-semibold text-ink leading-tight m-0 mb-1">
+          Series Killer
+        </h2>
+        <p class="text-sm text-ink-muted m-0">Your library</p>
+      </div>
+      <div class="flex items-center gap-2 shrink-0">
+        <router-link
+          to="/series/add"
+          class="btn-primary inline-flex items-center justify-center gap-2 whitespace-nowrap"
+        >
+          <Plus class="w-4 h-4 shrink-0" />
+          <span>Add Series</span>
+        </router-link>
+        <AccountMenu variant="toolbar" />
+      </div>
     </header>
-
-    <div
-      class="flex justify-end items-center gap-2 mb-6 lg:hidden"
-    >
-      <router-link
-        to="/series/add"
-        class="btn-primary flex items-center justify-center gap-2 w-full max-w-[14rem]"
-      >
-        <Plus class="w-4 h-4 shrink-0" />
-        <span>Add Series</span>
-      </router-link>
-      <AccountMenu variant="toolbar" />
-    </div>
 
     <!-- Loading State -->
     <div v-if="booksStore.loading" class="flex justify-center py-16">
