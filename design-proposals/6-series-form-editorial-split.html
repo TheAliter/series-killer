@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proposal 6 - Series Form / Editorial Split</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f5f1e8;
+      --paper-2: #ebe3d4;
+      --ink: #2d2721;
+      --muted: #74695a;
+      --line: #d7ccb7;
+      --accent: #8f6e44;
+      --accent-soft: #ede2cf;
+      --ok: #2f6f56;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Manrope, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% -10%, rgba(143, 110, 68, 0.18), transparent 45%),
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+      min-height: 100vh;
+    }
+    .wrap {
+      width: min(1120px, 100% - 2rem);
+      margin: 1rem auto 5rem;
+      display: grid;
+      gap: 1rem;
+    }
+    .shell {
+      background: rgba(255, 252, 245, 0.86);
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 25px 80px rgba(62, 47, 34, 0.12);
+    }
+    @media (min-width: 980px) {
+      .shell {
+        display: grid;
+        grid-template-columns: 1.05fr 1.45fr;
+        min-height: 82vh;
+      }
+    }
+    .preview {
+      padding: 1.2rem;
+      background: linear-gradient(165deg, #f8f3ea 0%, #ece2d2 100%);
+      border-bottom: 1px solid var(--line);
+    }
+    @media (min-width: 980px) {
+      .preview {
+        border-bottom: none;
+        border-right: 1px solid var(--line);
+        padding: 2rem;
+      }
+    }
+    .badge {
+      display: inline-block;
+      font-size: 0.73rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 0.3rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid rgba(143, 110, 68, 0.35);
+      color: var(--accent);
+      background: rgba(255, 255, 255, 0.65);
+    }
+    .preview h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 0.95;
+      margin: 0.9rem 0 0.35rem;
+      font-weight: 700;
+    }
+    .preview p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 30ch;
+      line-height: 1.45;
+      font-size: 0.93rem;
+    }
+    .cover {
+      margin-top: 1.5rem;
+      border-radius: 0.8rem;
+      border: 1px solid #c6b69d;
+      height: 240px;
+      background:
+        linear-gradient(180deg, rgba(37, 30, 26, 0.2), transparent 25%),
+        linear-gradient(145deg, #6f4f31, #4f3a28 60%, #2f241c);
+      box-shadow: 0 16px 32px rgba(37, 24, 14, 0.22);
+      position: relative;
+      overflow: hidden;
+    }
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: 12px;
+      border: 1px solid rgba(255, 245, 224, 0.25);
+      border-radius: 0.45rem;
+    }
+    .meta {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px dashed #c8baa5;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.8rem;
+      font-size: 0.82rem;
+    }
+    .meta strong {
+      display: block;
+      color: var(--ink);
+      font-size: 0.95rem;
+      margin-bottom: 0.15rem;
+    }
+    .form {
+      padding: 1.2rem;
+      display: grid;
+      gap: 1rem;
+      align-content: start;
+    }
+    @media (min-width: 980px) {
+      .form {
+        padding: 2rem 2rem 1.2rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.05rem;
+      }
+      .form .full { grid-column: 1 / -1; }
+    }
+    .row {
+      display: grid;
+      gap: 0.42rem;
+    }
+    label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      border-radius: 0.62rem;
+      border: 1px solid #d7c8b1;
+      background: #fffefb;
+      color: var(--ink);
+      padding: 0.75rem 0.85rem;
+      font: inherit;
+      font-size: 0.93rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: #9e7b4b;
+      box-shadow: 0 0 0 4px rgba(143, 110, 68, 0.12);
+    }
+    textarea {
+      min-height: 124px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      line-height: 1.35;
+      margin-top: -0.15rem;
+    }
+    .search-box {
+      border: 1px dashed #ccb99f;
+      background: #fcf8ef;
+      border-radius: 0.72rem;
+      padding: 0.7rem;
+      font-size: 0.85rem;
+      color: #6f624f;
+    }
+    .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 0.65rem;
+      justify-content: flex-end;
+      position: sticky;
+      bottom: 0;
+      padding-top: 0.8rem;
+      background: linear-gradient(180deg, rgba(255, 252, 245, 0), rgba(255, 252, 245, 0.95) 38%);
+      margin-top: 0.2rem;
+    }
+    .btn {
+      border: none;
+      border-radius: 0.7rem;
+      padding: 0.78rem 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .btn.cancel {
+      color: var(--ink);
+      background: #ece3d4;
+      border: 1px solid #d2c3ab;
+    }
+    .btn.save {
+      min-width: 172px;
+      color: #fff;
+      background: linear-gradient(135deg, #8f6e44, #755635);
+      box-shadow: 0 12px 25px rgba(90, 60, 28, 0.24);
+    }
+    .note {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #2d2721;
+      color: #f5f1e8;
+      text-align: center;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      padding: 0.45rem 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="shell">
+      <aside class="preview">
+        <span class="badge">Proposal A</span>
+        <h1>Build<br/>Series Entry</h1>
+        <p>Editorial split view. Left side give live cover + metadata. Right side keep form dense, desktop-fast.</p>
+        <div class="cover" aria-hidden="true"></div>
+        <div class="meta">
+          <div><strong>8 books</strong>planned range</div>
+          <div><strong>Lina North</strong>linked author</div>
+          <div><strong>OpenLibrary</strong>seed source</div>
+          <div><strong style="color:var(--ok)">Ready</strong>all required set</div>
+        </div>
+      </aside>
+      <form class="form" action="#">
+        <div class="row full">
+          <label>Search Book Seed</label>
+          <div class="search-box">Search "The Hollow Atlas" to auto-fill series name, author, cover...</div>
+        </div>
+        <div class="row">
+          <label>Series Name *</label>
+          <input type="text" value="Hollow Atlas Chronicles" />
+        </div>
+        <div class="row">
+          <label>Author</label>
+          <input type="text" value="Lina North" />
+        </div>
+        <div class="row full">
+          <label>Cover URL</label>
+          <input type="url" value="https://covers.openlibrary.org/b/id/129912-L.jpg" />
+        </div>
+        <div class="row">
+          <label>Total Books</label>
+          <input type="number" value="8" />
+          <div class="hint">Leave empty when unknown.</div>
+        </div>
+        <div class="row full">
+          <label>Description</label>
+          <textarea>A historical fantasy saga around cartographers mapping unstable timelines.</textarea>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn cancel">Cancel</button>
+          <button type="button" class="btn save">Save Series</button>
+        </div>
+      </form>
+    </section>
+  </div>
+  <div class="note">Proposal 6 · Editorial split form · desktop two-panel + sticky action rail</div>
+</body>
+</html>

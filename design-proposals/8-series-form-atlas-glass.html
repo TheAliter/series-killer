@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proposal 8 - Series Form / Atlas Glass</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-1: #efe8ff;
+      --bg-2: #d8f2ff;
+      --ink: #1f2238;
+      --muted: #626684;
+      --line: rgba(38, 43, 79, 0.16);
+      --glass: rgba(255, 255, 255, 0.64);
+      --accent: #6b5cff;
+      --accent-2: #3e89ff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Outfit, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 20%, rgba(107, 92, 255, 0.2), transparent 35%),
+        radial-gradient(circle at 88% 8%, rgba(62, 137, 255, 0.25), transparent 35%),
+        linear-gradient(145deg, var(--bg-1), var(--bg-2));
+    }
+    .scene {
+      width: min(1200px, 100% - 2rem);
+      margin: 1rem auto 4.5rem;
+      display: grid;
+      gap: 1rem;
+      align-items: start;
+    }
+    @media (min-width: 1040px) {
+      .scene {
+        grid-template-columns: 1.1fr 1.35fr;
+        gap: 1.4rem;
+        margin-top: 1.4rem;
+      }
+    }
+    .panel {
+      border: 1px solid var(--line);
+      border-radius: 1rem;
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 28px 55px rgba(37, 46, 93, 0.16);
+    }
+    .art {
+      padding: 1.15rem;
+      position: relative;
+      overflow: hidden;
+    }
+    @media (min-width: 1040px) { .art { padding: 1.6rem; min-height: 700px; } }
+    .chip {
+      display: inline-block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #3b4ed0;
+      background: rgba(107, 92, 255, 0.12);
+      border: 1px solid rgba(107, 92, 255, 0.25);
+      border-radius: 999px;
+      padding: 0.3rem 0.62rem;
+      font-weight: 600;
+    }
+    .art h1 {
+      margin: 0.85rem 0 0.4rem;
+      font-family: Fraunces, serif;
+      font-size: clamp(2rem, 5.2vw, 3.2rem);
+      line-height: 0.95;
+      font-weight: 700;
+      max-width: 10ch;
+    }
+    .art p {
+      margin: 0;
+      font-size: 0.92rem;
+      max-width: 34ch;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+    .mock-cover {
+      margin-top: 1.25rem;
+      border-radius: 0.85rem;
+      border: 1px solid rgba(62, 137, 255, 0.3);
+      background:
+        radial-gradient(circle at 20% 12%, rgba(255,255,255,0.5), transparent 30%),
+        linear-gradient(155deg, #7c65ff 0%, #3e89ff 60%, #1d2e8f 100%);
+      height: 270px;
+      position: relative;
+      overflow: hidden;
+    }
+    .mock-cover::before {
+      content: "";
+      position: absolute;
+      width: 200%;
+      height: 2px;
+      left: -30%;
+      top: 42%;
+      background: rgba(255,255,255,0.3);
+      transform: rotate(-10deg);
+    }
+    .grid {
+      margin-top: 0.95rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.55rem;
+    }
+    .tile {
+      border: 1px solid rgba(42, 55, 130, 0.15);
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 0.62rem;
+      padding: 0.55rem 0.62rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    .tile strong {
+      display: block;
+      color: var(--ink);
+      font-size: 0.95rem;
+      margin-bottom: 0.18rem;
+    }
+    .form {
+      padding: 1rem;
+      display: grid;
+      gap: 0.82rem;
+      align-content: start;
+    }
+    @media (min-width: 760px) {
+      .form {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 1.25rem;
+      }
+      .full { grid-column: 1 / -1; }
+    }
+    .row { display: grid; gap: 0.34rem; }
+    label {
+      font-size: 0.75rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #50597e;
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      border-radius: 0.64rem;
+      border: 1px solid rgba(55, 63, 120, 0.18);
+      background: rgba(255, 255, 255, 0.72);
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.92rem;
+      padding: 0.76rem 0.82rem;
+      outline: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+    }
+    input:focus, textarea:focus {
+      border-color: rgba(107, 92, 255, 0.45);
+      box-shadow: 0 0 0 4px rgba(107, 92, 255, 0.16);
+    }
+    textarea {
+      min-height: 122px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    .autofill {
+      border: 1px dashed rgba(62, 137, 255, 0.36);
+      border-radius: 0.64rem;
+      background: rgba(62, 137, 255, 0.12);
+      color: #2955af;
+      padding: 0.65rem;
+      font-size: 0.82rem;
+    }
+    .helper {
+      color: var(--muted);
+      font-size: 0.74rem;
+      margin-top: -0.1rem;
+    }
+    .bottom {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 0.6rem;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      margin-top: 0.2rem;
+      padding-top: 0.85rem;
+      border-top: 1px solid rgba(40, 52, 117, 0.15);
+    }
+    button {
+      border: none;
+      border-radius: 0.72rem;
+      cursor: pointer;
+      font-weight: 600;
+      padding: 0.72rem 0.95rem;
+      font-size: 0.9rem;
+    }
+    .cancel {
+      background: rgba(31, 34, 56, 0.08);
+      color: #2e3252;
+      border: 1px solid rgba(31, 34, 56, 0.18);
+    }
+    .save {
+      min-width: 168px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 13px 28px rgba(55, 88, 184, 0.32);
+    }
+    .mark {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.72rem;
+      padding: 0.42rem;
+      background: rgba(31, 34, 56, 0.9);
+      color: #d8dfff;
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <aside class="panel art">
+      <span class="chip">Proposal C</span>
+      <h1>Atlas Glass Form</h1>
+      <p>Soft futuristic mode. Good when you want modern desktop feel but still clear on mobile.</p>
+      <div class="mock-cover" aria-hidden="true"></div>
+      <div class="grid">
+        <div class="tile"><strong>Desktop</strong>Two-column form + visual context</div>
+        <div class="tile"><strong>Mobile</strong>Single column, same hierarchy</div>
+        <div class="tile"><strong>Actions</strong>Sticky bottom decision row</div>
+        <div class="tile"><strong>Tone</strong>Calm, clean, high-contrast focus</div>
+      </div>
+    </aside>
+
+    <form class="panel form" action="#">
+      <div class="row full">
+        <label>Book Seed Search</label>
+        <div class="autofill">Search title. Auto-fill name, author, cover from OpenLibrary result.</div>
+      </div>
+      <div class="row">
+        <label>Series Name *</label>
+        <input type="text" value="Hollow Atlas Chronicles" />
+      </div>
+      <div class="row">
+        <label>Author</label>
+        <input type="text" value="Lina North" />
+      </div>
+      <div class="row full">
+        <label>Cover URL</label>
+        <input type="url" value="https://covers.openlibrary.org/b/id/129912-L.jpg" />
+      </div>
+      <div class="row">
+        <label>Total Books</label>
+        <input type="number" value="8" />
+        <div class="helper">Leave blank when series count unknown.</div>
+      </div>
+      <div class="row full">
+        <label>Description</label>
+        <textarea>Chronicle of scholars mapping regions where geography changes with collective memory.</textarea>
+      </div>
+      <div class="bottom">
+        <button class="cancel" type="button">Cancel</button>
+        <button class="save" type="button">Save Series</button>
+      </div>
+    </form>
+  </div>
+  <div class="mark">Proposal 8 · Atlas glass form · soft desktop canvas + responsive compact mode</div>
+</body>
+</html>
