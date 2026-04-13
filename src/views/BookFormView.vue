@@ -1,5 +1,5 @@
 <template>
-  <div class="mobile-container py-6">
+  <div class="mobile-container py-6 lg:max-w-6xl">
     <BookForm 
       :book="book" 
       :series-id="seriesId"

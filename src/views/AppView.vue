@@ -32,7 +32,7 @@
       :class="
         showSeriesRail
           ? 'min-w-0 flex-1 lg:col-start-2 px-4 pb-20 pt-0 lg:px-0 lg:pb-8'
-          : 'mobile-container flex flex-col flex-1'
+          : `mobile-container flex flex-col flex-1 ${showWideFormContainer ? 'lg:max-w-6xl' : ''}`
       "
     >
       <router-view />
@@ -48,4 +48,7 @@ import AccountMenu from '@/components/AccountMenu.vue'
 
 const route = useRoute()
 const showSeriesRail = computed(() => route.name === 'Series')
+const showWideFormContainer = computed(() =>
+  ['SeriesAdd', 'SeriesEdit', 'BookAddToSeries', 'BookAdd', 'BookEdit'].includes(String(route.name))
+)
 </script>

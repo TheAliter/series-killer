@@ -1,65 +1,92 @@
 <template>
-  <div class="fixed inset-0 flex h-screen w-screen flex-col bg-card-cream">
-    <div class="border-b border-paper-dark bg-card-cream p-4">
-      <h3 class="font-serif text-lg font-semibold text-ink">
-        {{ isEditing ? 'Edit Series' : 'Add Series' }}
-      </h3>
-    </div>
-    <form @submit.prevent="onSubmit" class="flex-1 flex flex-col overflow-y-auto">
-      <div class="flex-1 p-4 space-y-4">
-        <!-- Book Search Section -->
-        <div>
-          <label class="block text-sm font-medium mb-1">Search for a book to create series from</label>
-          <SeriesSearch 
-            v-model="searchQuery"
-            @select="handleBookSelect"
+  <div class="editorial-form-root">
+    <section class="editorial-shell">
+      <aside class="editorial-preview">
+        <span class="preview-badge">{{ isEditing ? 'Edit Mode' : 'Create Mode' }}</span>
+        <h1 class="preview-title">{{ previewSeriesName }}</h1>
+        <div class="preview-cover" :class="{ 'has-image': showCoverImage }">
+          <img
+            v-if="showCoverImage"
+            :src="form.cover_url"
+            :alt="`${previewSeriesName} cover`"
+            class="cover-image"
+            @error="onImageError"
           />
-          <p class="mt-1 text-xs text-ink-muted">Search for a book to automatically fill series name, author, and cover image.</p>
+          <div v-else class="cover-fallback">Cover Preview</div>
         </div>
 
-        <div>
-          <label class="block text-sm font-medium mb-1">Series Name *</label>
-          <input v-model="form.name" type="text" class="input" required />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Author</label>
-          <input v-model="authorName" type="text" class="input" placeholder="Author name..." />
-        </div>
-
-        <div>
-          <label class="block text-sm font-medium mb-1">Cover Image URL</label>
-          <input v-model="form.cover_url" type="url" class="input" placeholder="https://..." />
-          <div v-if="form.cover_url" class="mt-2 flex justify-center">
-            <img :src="form.cover_url" alt="Series Cover Preview" class="max-h-40 rounded shadow" @error="onImageError" v-show="!coverError" />
-            <span v-if="coverError" class="text-xs text-red-500">Invalid image URL</span>
+        <div class="preview-meta">
+          <div class="meta-item">
+            <strong>{{ previewBooksLabel }}</strong>
+            planned range
+          </div>
+          <div class="meta-item">
+            <strong>{{ previewAuthorName }}</strong>
+            linked author
+          </div>
+          <div class="meta-item">
+            <strong>{{ previewSeedSource }}</strong>
+            seed source
+          </div>
+          <div class="meta-item">
+            <strong :class="{ 'status-ready': previewReady }">{{ previewStatusLabel }}</strong>
+            required fields
           </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Total Books</label>
-          <input v-model.number="form.total_books" type="number" min="0" class="input" />
-          <p class="mt-1 text-xs text-ink-muted">Leave empty if unknown. If specified, dummy books will be created automatically.</p>
+      </aside>
+
+      <form class="editorial-form" @submit.prevent="onSubmit">
+        <div class="form-grid">
+          <div class="field-row full-width">
+            <label for="series-book-search">Search Book Seed</label>
+            <div class="search-box">
+              <SeriesSearch id="series-book-search" v-model="searchQuery" @select="handleBookSelect" />
+            </div>
+            <p class="hint">Search OpenLibrary to auto-fill series name, author, and cover image.</p>
+          </div>
+
+          <div class="field-row">
+            <label for="series-name">Series Name *</label>
+            <input id="series-name" v-model="form.name" type="text" required />
+          </div>
+
+          <div class="field-row">
+            <label for="series-author">Author</label>
+            <input id="series-author" v-model="authorName" type="text" placeholder="Author name..." />
+          </div>
+
+          <div class="field-row full-width">
+            <label for="series-cover-url">Cover URL</label>
+            <input id="series-cover-url" v-model="form.cover_url" type="url" placeholder="https://..." />
+            <p v-if="form.cover_url && coverError" class="error-hint">Invalid image URL.</p>
+          </div>
+
+          <div class="field-row">
+            <label for="series-total-books">Total Books</label>
+            <input id="series-total-books" v-model.number="form.total_books" type="number" min="0" />
+            <p class="hint">Leave empty when unknown.</p>
+          </div>
+
+          <div class="field-row full-width">
+            <label for="series-description">Description</label>
+            <textarea
+              id="series-description"
+              v-model="form.description"
+              rows="4"
+              placeholder="Brief description of the series..."
+            ></textarea>
+          </div>
         </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">Description</label>
-          <textarea 
-            v-model="form.description" 
-            rows="3" 
-            class="input" 
-            placeholder="Brief description of the series..."
-          ></textarea>
+
+        <div class="form-actions">
+          <button type="button" class="button cancel" @click="$emit('cancel')">Cancel</button>
+          <button type="submit" class="button save" :disabled="loading">
+            <span v-if="loading">Saving...</span>
+            <span v-else>{{ isEditing ? 'Update Series' : 'Save Series' }}</span>
+          </button>
         </div>
-      </div>
-      <div class="sticky bottom-0 left-0 flex w-full space-x-3 border-t border-paper-dark bg-card-cream p-4">
-        <button type="button" @click="$emit('cancel')" class="btn-secondary flex-1">
-          Cancel
-        </button>
-        <button type="submit" :disabled="loading" class="btn-primary flex-1">
-          <span v-if="loading">Saving...</span>
-          <span v-else>{{ isEditing ? 'Update' : 'Add' }}</span>
-        </button>
-      </div>
-    </form>
+      </form>
+    </section>
   </div>
 </template>
 
@@ -154,6 +181,37 @@ watch(() => form.value.cover_url, () => {
   coverError.value = false
 })
 
+const previewSeriesName = computed(() => {
+  const candidateName = form.value.name.trim()
+  if (candidateName) return candidateName
+  return isEditing.value ? 'Untitled Series' : 'New Series'
+})
+
+const previewAuthorName = computed(() => {
+  const candidateAuthorName = authorName.value.trim()
+  return candidateAuthorName || 'No author linked'
+})
+
+const previewBooksLabel = computed(() => {
+  return form.value.total_books > 0 ? `${form.value.total_books} books` : 'Books TBD'
+})
+
+const previewSeedSource = computed(() => {
+  return searchQuery.value.trim() ? 'OpenLibrary' : 'Manual'
+})
+
+const previewReady = computed(() => {
+  return form.value.name.trim().length > 0
+})
+
+const previewStatusLabel = computed(() => {
+  return previewReady.value ? 'Ready' : 'Draft'
+})
+
+const showCoverImage = computed(() => {
+  return Boolean(form.value.cover_url && !coverError.value)
+})
+
 const onSubmit = async () => {
   loading.value = true
   try {
@@ -181,4 +239,275 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
-</script> 
+</script>
+
+<style scoped>
+.editorial-form-root {
+  --paper: #f5f1e8;
+  --paper-2: #ebe3d4;
+  --ink: #2d2721;
+  --muted: #74695a;
+  --line: #d7ccb7;
+  --accent: #8f6e44;
+  --accent-soft: #ede2cf;
+  --ok: #2f6f56;
+
+  font-family: "Manrope", "Avenir Next", "Segoe UI", sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 10% -10%, rgb(143 110 68 / 18%), transparent 45%),
+    linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgb(62 47 34 / 12%);
+}
+
+.editorial-shell {
+  display: grid;
+}
+
+.editorial-preview {
+  padding: 1.2rem;
+  background: linear-gradient(165deg, #f8f3ea 0%, #ece2d2 100%);
+  border-bottom: 1px solid var(--line);
+}
+
+.preview-badge {
+  display: inline-block;
+  font-size: 0.73rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.3rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgb(143 110 68 / 35%);
+  color: var(--accent);
+  background: rgb(255 255 255 / 65%);
+}
+
+.preview-title {
+  font-family: "Cormorant Garamond", "Iowan Old Style", "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 0.95;
+  margin: 0.9rem 0 0.35rem;
+  font-weight: 700;
+}
+
+.preview-cover {
+  margin-top: 1.5rem;
+  border-radius: 0.8rem;
+  border: 1px solid #c6b69d;
+  height: min(52vh, 420px);
+  max-height: 420px;
+  background:
+    linear-gradient(180deg, rgb(37 30 26 / 20%), transparent 25%),
+    linear-gradient(145deg, #6f4f31, #4f3a28 60%, #2f241c);
+  box-shadow: 0 16px 32px rgb(37 24 14 / 22%);
+  position: relative;
+  overflow: hidden;
+}
+
+.preview-cover::after {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 1px solid rgb(255 245 224 / 25%);
+  border-radius: 0.45rem;
+  pointer-events: none;
+}
+
+.preview-cover.has-image::after {
+  border-color: rgb(255 245 224 / 45%);
+}
+
+.preview-cover.has-image {
+  background: transparent;
+}
+
+.cover-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.cover-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: rgb(255 247 233 / 82%);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+}
+
+.preview-meta {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #c8baa5;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+  font-size: 0.82rem;
+}
+
+.meta-item strong {
+  display: block;
+  color: var(--ink);
+  font-size: 0.95rem;
+  margin-bottom: 0.15rem;
+}
+
+.meta-item .status-ready {
+  color: var(--ok);
+}
+
+.editorial-form {
+  padding: 1.2rem;
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.field-row {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.full-width {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+input,
+textarea {
+  width: 100%;
+  border-radius: 0.62rem;
+  border: 1px solid #d7c8b1;
+  background: #fffefb;
+  color: var(--ink);
+  padding: 0.75rem 0.85rem;
+  font: inherit;
+  font-size: 0.93rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus,
+textarea:focus {
+  border-color: #9e7b4b;
+  box-shadow: 0 0 0 4px rgb(143 110 68 / 12%);
+}
+
+textarea {
+  min-height: 124px;
+  resize: vertical;
+  line-height: 1.45;
+}
+
+.search-box {
+  border: none;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+}
+
+.search-box :deep(input) {
+  border-color: #d7c8b1;
+  background: #fffefb;
+}
+
+.search-box :deep(.absolute.top-full) {
+  border-color: #d7c8b1;
+  border-radius: 0.6rem;
+}
+
+.hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  line-height: 1.35;
+  margin-top: -0.15rem;
+}
+
+.error-hint {
+  font-size: 0.75rem;
+  color: #b53939;
+  line-height: 1.35;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.65rem;
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  padding-top: 0.8rem;
+}
+
+.button {
+  border: none;
+  border-radius: 0.7rem;
+  padding: 0.78rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  cursor: default;
+  opacity: 0.7;
+  transform: none;
+}
+
+.button.cancel {
+  color: var(--ink);
+  background: #ece3d4;
+  border: 1px solid #d2c3ab;
+}
+
+.button.save {
+  min-width: 172px;
+  color: #fff;
+  background: linear-gradient(135deg, #8f6e44, #755635);
+  box-shadow: 0 12px 25px rgb(90 60 28 / 24%);
+}
+
+@media (min-width: 980px) {
+  .editorial-shell {
+    grid-template-columns: 1.05fr 1.45fr;
+    min-height: 82vh;
+  }
+
+  .editorial-preview {
+    border-bottom: none;
+    border-right: 1px solid var(--line);
+    padding: 2rem;
+  }
+
+  .editorial-form {
+    padding: 2rem 2rem 1.2rem;
+  }
+
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.05rem;
+  }
+}
+</style>
